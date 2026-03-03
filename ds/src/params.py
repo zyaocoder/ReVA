@@ -173,6 +173,10 @@ class DataArguments:
     data_path: str = field(
         default=None, metadata={"help": "Path to the training data."}
     )
+    dataset_split: str = field(
+        default="train",
+        metadata={"help": "Dataset split to use when data_path points to a local Hugging Face dataset directory."}
+    )
     lazy_preprocess: bool = False
     image_folder: Optional[str] = field(default=None)
     image_min_pixels: Optional[int] = field(default=3136)
@@ -184,3 +188,8 @@ class DataArguments:
     video_resized_width: int = field(default=None)
     video_resized_height: int = field(default=None)
     fps: float = 1.0
+    max_frames: Optional[int] = field(
+        default=64,
+        metadata={"help": "Maximum number of frames to sample per video. "
+                          "Takes precedence over fps when set. Set to None to disable."}
+    )

@@ -15,8 +15,11 @@ from src.constants import (
 
 def replace_image_tokens(input_string, is_video=False):
     if is_video:
-        pattern = r'\n?' + re.escape(LLAVA_VIDEO_TOKEN) + r'\n?'
         replacement = VISION_START_TOKEN + DEFAULT_VIDEO_TOKEN + VISION_END_TOKEN
+        for token in (LLAVA_VIDEO_TOKEN, LLAVA_IMAGE_TOKEN):
+            pattern = r'\n?' + re.escape(token) + r'\n?'
+            input_string = re.sub(pattern, replacement, input_string)
+        return input_string
     else:
         pattern = r'\n?' + re.escape(LLAVA_IMAGE_TOKEN) + r'\n?'
         replacement = VISION_START_TOKEN + DEFAULT_IMAGE_TOKEN + VISION_END_TOKEN
@@ -24,13 +27,14 @@ def replace_image_tokens(input_string, is_video=False):
     return re.sub(pattern, replacement, input_string)
 
 def llava_to_openai(conversations, is_video=False):
-    role_mapping = {"human": "user", "gpt": "assistant"}
+    role_mapping = {"human": "user", "gpt": "assistant", "user": "user", "assistant": "assistant"}
 
     transformed_data = []
     for conversation in conversations:
-        transformed_content = replace_image_tokens(conversation["value"], is_video=is_video)
+        content = conversation.get("value", conversation.get("content", ""))
+        transformed_content = replace_image_tokens(content, is_video=is_video)
         transformed_entry = {
-            "role": role_mapping.get(conversation["from"], conversation["from"]),
+            "role": role_mapping.get(conversation.get("from", conversation.get("role")), conversation.get("from", conversation.get("role"))),
             "content": transformed_content,
         }
         transformed_data.append(transformed_entry)
@@ -94,27 +98,34 @@ def get_image_info(image_path, min_pixel, max_pixel, width, height):
 
     return image_input[0]
 
-def get_video_info(video_path, min_pixels, max_pixels, width, height, fps):
+def get_video_info(video_path, min_pixels, max_pixels, width, height, fps,
+                   max_frames=None):
     # Using this because of process_vision_info function
     # Need to fix this in the future
     content = {
-        "type": "video", 
+        "type": "video",
         "video": video_path,
         "min_pixels": min_pixels,
         "max_pixels": max_pixels,
-        "fps": fps
     }
+
+    # qwen_vl_utils only accepts one of fps or nframes, not both
+    if max_frames is not None:
+        content["nframes"] = max_frames
+    else:
+        content["fps"] = fps
 
     if width is not None and height is not None:
         content["resized_width"] = width
         content["resized_height"] = height
-    
+
     messages = [
-        {"role": "user", 
+        {"role": "user",
          "content": [content]
         }
     ]
 
-    _, video_input, video_kwargs = process_vision_info(messages, return_video_kwargs=True)
+    # return_video_kwargs was added in qwen-vl-utils >0.0.8; fall back to 2-tuple
+    _, video_input = process_vision_info(messages)
 
-    return video_input[0], video_kwargs
+    return video_input[0], {}

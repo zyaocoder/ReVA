@@ -1,9 +1,10 @@
 import copy
 import os
+import tarfile
+import tempfile
 from typing import Dict
 import torch
 import transformers
-import ujson as json
 from torch.utils.data import Dataset
 
 from src.params import DataArguments
@@ -17,7 +18,10 @@ from src.constants import (
 )
 
 from .data_utils import get_image_info, get_video_info, llava_to_openai, pad_sequence
+from .record_utils import load_records
 import random
+
+_TAR_INDEX_CACHE = {}
 
 
 class SupervisedDataset(Dataset):
@@ -34,17 +38,10 @@ class SupervisedDataset(Dataset):
         super(SupervisedDataset, self).__init__()
         self.data_path = data_path
 
-        if data_path.endswith(".jsonl"):
-            list_data_dict = []
-            with open(data_path, 'r', encoding='utf-8') as f:
-                for line in f:
-                    list_data_dict.append(line)
-
+        if isinstance(data_path, str):
+            list_data_dict = load_records(data_path, dataset_split=data_args.dataset_split)
         else:
-            if isinstance(data_path, str):
-                list_data_dict = json.load(open(data_path, "r"))
-            else:
-                list_data_dict = data_path
+            list_data_dict = load_records(data_path, dataset_split=data_args.dataset_split)
 
         self.model_id = model_id
         self.processor = processor
@@ -60,16 +57,102 @@ class SupervisedDataset(Dataset):
         self.video_resized_w = data_args.video_resized_width
         self.video_resized_h = data_args.video_resized_height
         self.fps = data_args.fps
+        self.max_frames = data_args.max_frames
 
     def __len__(self):
         return len(self.list_data_dict)
 
+    def _resolve_from_tar_archives(self, media_path: str, source_dir: str | None):
+        if not source_dir or not os.path.isdir(source_dir):
+            return None
+
+        tar_files = sorted(
+            os.path.join(source_dir, name)
+            for name in os.listdir(source_dir)
+            if name.endswith(".tar.gz")
+        )
+        if not tar_files:
+            return None
+
+        member_name = media_path.lstrip("./")
+        tar_index = _TAR_INDEX_CACHE.get(source_dir)
+        if tar_index is None:
+            tar_index = {}
+            for tar_path in tar_files:
+                try:
+                    with tarfile.open(tar_path, "r:gz") as tar:
+                        for member in tar.getmembers():
+                            if member.isfile():
+                                tar_index[member.name.lstrip("./")] = tar_path
+                except tarfile.TarError:
+                    continue
+            _TAR_INDEX_CACHE[source_dir] = tar_index
+
+        tar_path = tar_index.get(member_name)
+        if tar_path is None:
+            return None
+
+        cache_root = os.path.join(
+            tempfile.gettempdir(),
+            "llava_video_178k_extracted",
+            os.path.basename(source_dir),
+        )
+        extracted_path = os.path.join(cache_root, member_name)
+        if os.path.exists(extracted_path):
+            return extracted_path
+
+        os.makedirs(os.path.dirname(extracted_path), exist_ok=True)
+        with tarfile.open(tar_path, "r:gz") as tar:
+            member = tar.getmember(member_name)
+            src = tar.extractfile(member)
+            if src is None:
+                raise FileNotFoundError(f"Failed to extract {member_name} from {tar_path}")
+            with open(extracted_path, "wb") as dst:
+                dst.write(src.read())
+
+        return extracted_path
+
+    def _resolve_media_path(self, media_path, sample_folder=None, global_folder=None, source_dir=None, media_kind="media"):
+        if isinstance(media_path, dict):
+            for key in ("path", "file_path", "video_path", "image_path", "fname", "name"):
+                value = media_path.get(key)
+                if isinstance(value, str) and value:
+                    media_path = value
+                    break
+            else:
+                if media_path.get("bytes") is not None:
+                    raise ValueError(
+                        f"{media_kind} is stored as embedded bytes. Convert it to path-based JSONL first."
+                    )
+                raise ValueError(f"Unsupported {media_kind} descriptor: {media_path}")
+
+        if not isinstance(media_path, str) or not media_path:
+            raise ValueError(f"Invalid {media_kind} path: {media_path}")
+
+        if media_path.startswith("http") or os.path.isabs(media_path) or os.path.exists(media_path):
+            return media_path
+
+        candidates = []
+        if sample_folder:
+            candidates.append(os.path.join(sample_folder, media_path))
+        if global_folder:
+            candidates.append(os.path.join(global_folder, media_path))
+        if source_dir:
+            candidates.append(os.path.join(source_dir, media_path))
+
+        for candidate in candidates:
+            if os.path.exists(candidate):
+                return candidate
+
+        if media_kind == "video":
+            tar_resolved = self._resolve_from_tar_archives(media_path, source_dir)
+            if tar_resolved is not None:
+                return tar_resolved
+
+        return candidates[0] if candidates else media_path
+
     def _get_item(self, i):
-        if self.data_path.endswith('.jsonl'):
-            line = self.list_data_dict[i]
-            sources = json.loads(line.strip())
-        else:
-            sources = self.list_data_dict[i]
+        sources = self.list_data_dict[i]
 
         is_video = False
 
@@ -80,7 +163,9 @@ class SupervisedDataset(Dataset):
             pixel_key = "pixel_values"
             
             image_files = sources["image"]
-            image_folder = self.data_args.image_folder
+            image_folder = sources.get("image_folder")
+            global_image_folder = self.data_args.image_folder
+            source_dir = sources.get("_source_dir")
 
             if isinstance(image_files, str):
                 image_files = [image_files]
@@ -88,9 +173,13 @@ class SupervisedDataset(Dataset):
             images = []
             
             for image_file in image_files:
-                if not os.path.exists(image_file):
-                    if not image_file.startswith("http"):
-                        image_file = os.path.join(image_folder, image_file)
+                image_file = self._resolve_media_path(
+                    image_file,
+                    sample_folder=image_folder,
+                    global_folder=global_image_folder,
+                    source_dir=source_dir,
+                    media_kind="image",
+                )
                 images.append(get_image_info(image_file, self.image_min_pixel, self.image_max_pixel, self.image_resized_w, self.image_resized_h))
 
         elif "video" in sources:
@@ -100,17 +189,23 @@ class SupervisedDataset(Dataset):
             pixel_key = "pixel_values_videos"
 
             video_files = sources["video"]
-            video_folder = self.data_args.image_folder
+            video_folder = sources.get("video_folder")
+            global_video_folder = self.data_args.image_folder
+            source_dir = sources.get("_source_dir")
 
             if isinstance(video_files, str):
                 video_files = [video_files]
 
             videos = []
             for video_file in video_files:
-                if not os.path.exists(video_file):
-                    if not video_file.startswith("http"):
-                        video_file = os.path.join(video_folder, video_file)
-                video_input, video_kwargs = get_video_info(video_file, self.video_min_pixel, self.video_max_pixel, self.video_resized_w, self.video_resized_h, self.data_args.fps)
+                video_file = self._resolve_media_path(
+                    video_file,
+                    sample_folder=video_folder,
+                    global_folder=global_video_folder,
+                    source_dir=source_dir,
+                    media_kind="video",
+                )
+                video_input, video_kwargs = get_video_info(video_file, self.video_min_pixel, self.video_max_pixel, self.video_resized_w, self.video_resized_h, self.data_args.fps, self.max_frames)
                 videos.append(video_input)
         else:
             grid_key = None

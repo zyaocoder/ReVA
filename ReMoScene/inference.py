@@ -3,7 +3,7 @@ import os
 import argparse
 import torch
 from transformers import AutoProcessor
-from llavaonevision1_5.modeling_llavaonevision1_5 import LLaVAOneVision1_5_ForConditionalGeneration
+from backbone.modeling_backbone import ReVABackboneForConditionalGeneration
 from qwen_vl_utils import process_vision_info
 
 
@@ -59,7 +59,7 @@ def main(args):
     
     # Load the model and processor from the specified path
     # device_map="auto" will handle placing the model on available GPUs
-    model = LLaVAOneVision1_5_ForConditionalGeneration.from_pretrained(
+    model = ReVABackboneForConditionalGeneration.from_pretrained(
         args.model_path, 
         torch_dtype="auto", 
         device_map="auto",
@@ -101,7 +101,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate text from an image using a Qwen2-VL model.")
+    parser = argparse.ArgumentParser(description="Generate text from an image using a ReVA-compatible multimodal model.")
     parser.add_argument(
         "--model-path", 
         type=str, 

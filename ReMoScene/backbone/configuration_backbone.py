@@ -255,7 +255,7 @@ class Llavaonevision1_5Config(PretrainedConfig):
             The video token index to encode the image prompt.
     """
 
-    model_type = "llavaonevision1_5"
+    model_type = "reva_backbone"
     sub_configs = {"vision_config": RiceConfig, "text_config": LLaVAOneVision1_5_TextConfig}
     keys_to_ignore_at_inference = ["past_key_values"]
 
@@ -286,4 +286,7 @@ class Llavaonevision1_5Config(PretrainedConfig):
         super().__init__(**kwargs)
 
 
-__all__ = ["Llavaonevision1_5Config", "LLaVAOneVision1_5_TextConfig"]
+ReVABackboneConfig = Llavaonevision1_5Config
+
+
+__all__ = ["Llavaonevision1_5Config", "LLaVAOneVision1_5_TextConfig", "ReVABackboneConfig"]

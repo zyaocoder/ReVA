@@ -2,11 +2,12 @@
 
 ReVA is a lightweight repository for our video-centric multimodal model work.
 This repo currently focuses on **ReMoScene**, a trainable video compression and
-motion reasoning module built on top of a **LLaVA-ov-1.5** backbone.
+motion reasoning module built on top of a multimodal backbone adapted from
+**LLaVA-ov-1.5**.
 
 ## Repository Layout
 
-- `ReMoScene/llavaonevision1_5/remoscene.py`: ReMoScene core implementation
+- `ReMoScene/backbone/remoscene.py`: ReMoScene core implementation
 - `ReMoScene/src/train/train_remoscene.py`: training entrypoint
 - `ReMoScene/scripts/train_remoscene.sh`: simple non-Slurm training script
 - `ReMoScene/convert_hf_video_to_reva.py`: dataset conversion helper

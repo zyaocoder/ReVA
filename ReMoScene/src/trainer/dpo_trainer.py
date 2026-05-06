@@ -133,7 +133,8 @@ class QwenDPOTrainer(DPOTrainer):
         loss_mask = torch.roll(loss_mask, shifts=-1, dims=1).bool()
 
         if logits.shape[:2] != labels.shape[:2]:
-            # for llava, the returned logits include the image tokens (placed before the text tokens)
+            # Some multimodal backbones return logits that still include visual tokens
+            # placed before the text tokens.
             seq_len = labels.shape[1]
             logits = logits[:, -seq_len:]
 

@@ -1,5 +1,5 @@
 """
-Convert RSVidQA JSON format to LLaVA conversations JSONL format.
+Convert a multiple-choice video QA JSON split into ReVA JSONL format.
 
 Input format (5_train_set.json / 5_val_set.json / 5_test_set.json):
 {
@@ -23,7 +23,7 @@ Input format (5_train_set.json / 5_val_set.json / 5_test_set.json):
   }
 }
 
-Output format (LLaVA JSONL, one JSON object per line):
+Output format (ReVA JSONL, one JSON object per line):
 {"video": "path.mp4", "conversations": [
   {"from": "human", "value": "<video>\nQ?\nA. ...\nB. ...\nC. ...\nD. ..."},
   {"from": "gpt",   "value": "B"}
@@ -35,20 +35,19 @@ import json
 import os
 
 
-LLAVA_VIDEO_TOKEN = "<video>"
+VIDEO_TOKEN = "<video>"
 OPTION_KEYS = ["A", "B", "C", "D"]
 
 
 def build_question_text(question: str, options: dict) -> str:
     """Format MCQ question with options into a human turn."""
-    lines = [LLAVA_VIDEO_TOKEN, question]
+    lines = [VIDEO_TOKEN, question]
     for k in OPTION_KEYS:
         if k in options:
             lines.append(f"{k}. {options[k]}")
     return "\n".join(lines)
 
 
-RSVID_PATH_PREFIX = "#dataset/RSVidQA/"
 DATASET_PATH_PREFIX = "#dataset/"
 
 
@@ -57,9 +56,9 @@ def convert_split(input_path: str, output_path: str, video_root: str | None = No
     Convert one split JSON file to JSONL.
 
     Args:
-        input_path:  path to the RSVidQA JSON file
+        input_path:  path to the input JSON file
         output_path: path to write the output JSONL
-        video_root:  root directory that replaces the '#dataset/RSVidQA/' placeholder
+        video_root:  root directory that replaces a legacy '#dataset/.../' placeholder
                      in file_path values. If None, file_path is used as-is.
 
     Returns:
@@ -75,12 +74,10 @@ def convert_split(input_path: str, output_path: str, video_root: str | None = No
         for vid_id, vid_info in videos.items():
             file_path = vid_info.get("file_path", "")
             if video_root:
-                # Replace '#dataset/RSVidQA/' placeholder with the actual root
-                if file_path.startswith(RSVID_PATH_PREFIX):
-                    file_path = os.path.join(video_root, file_path[len(RSVID_PATH_PREFIX):])
-                elif file_path.startswith(DATASET_PATH_PREFIX):
-                    # Already anchored at the repo-local dataset root.
-                    pass
+                # Replace legacy '#dataset/.../' placeholders with the actual root.
+                if file_path.startswith(DATASET_PATH_PREFIX):
+                    relative_path = file_path[len(DATASET_PATH_PREFIX):].lstrip("/")
+                    file_path = os.path.join(video_root, relative_path)
                 elif not os.path.isabs(file_path):
                     file_path = os.path.join(video_root, file_path)
 
@@ -118,11 +115,11 @@ def convert_split(input_path: str, output_path: str, video_root: str | None = No
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Convert RSVidQA JSON splits to LLaVA JSONL format."
+        description="Convert a multiple-choice video QA JSON split to ReVA JSONL format."
     )
     parser.add_argument(
         "--input", "-i", required=True,
-        help="Path to RSVidQA JSON file (e.g. 5_train_set.json)"
+        help="Path to an input JSON file (for example a train/val/test split)"
     )
     parser.add_argument(
         "--output", "-o", required=True,
@@ -130,8 +127,7 @@ def main():
     )
     parser.add_argument(
         "--video_root", default=None,
-        help="Root directory that replaces the '#dataset/RSVidQA/' placeholder "
-             "in file_path values (e.g. /anvil/projects/x-cis251076/likai/RSVidQA)"
+        help="Root directory used to resolve relative or legacy '#dataset/.../' video paths"
     )
     args = parser.parse_args()
 

@@ -3,7 +3,7 @@
 ReMoScene wrapper for ReVA.
 
 This module plugs a trainable video compression layer into the local
-LLaVA-OneVision-1.5 implementation that ships with this repository.
+multimodal backbone implementation that ships with this repository.
 
 Architecture (all steps follow the user spec):
 
@@ -590,7 +590,7 @@ class ReMoSceneConfig:
 
 class ReMoSceneWrapper(nn.Module):
     """
-    Wraps a frozen LLaVA-OneVision-1.5 model and adds the ReMoScene
+    Wraps a frozen multimodal backbone model and adds the ReMoScene
     video understanding pipeline.
 
     Trainable parameters
@@ -607,7 +607,7 @@ class ReMoSceneWrapper(nn.Module):
     Forward
     -------
     Accepts the exact same keyword arguments as
-    ``LLaVAOneVision1_5_ForConditionalGeneration.forward()``.
+    the wrapped backbone model's ``forward()`` method.
     When ``pixel_values_videos`` is present the standard video embedding path
     is replaced by the ReMoScene pipeline, and ``inputs_embeds`` /
     ``attention_mask`` / ``labels`` are rebuilt to match the new token count.
@@ -1011,7 +1011,7 @@ class ReMoSceneWrapper(nn.Module):
         **kwargs,
     ):
         """
-        Identical signature to ``LLaVAOneVision1_5_ForConditionalGeneration.forward()``.
+        Identical signature to the wrapped backbone model's ``forward()`` method.
 
         Video inputs are processed through the ReMoScene pipeline.
         The frozen LLM receives the final ``inputs_embeds``.
@@ -1231,7 +1231,7 @@ class ReMoSceneWrapper(nn.Module):
         )
 
         # Pass precomputed embeddings to the full model's generate method.
-        # LLaVAOneVision1_5_ForConditionalGeneration inherits GenerationMixin
+        # The wrapped backbone model inherits GenerationMixin.
         # and accepts inputs_embeds directly (skipping vision re-encoding).
         return self.base_model.generate(
             inputs_embeds  = inputs_embeds,
@@ -1251,7 +1251,7 @@ def build_remoscene_model(
     device_map      : str = "auto",
 ) -> ReMoSceneWrapper:
     """
-    Load a LLaVA-OneVision-1.5 checkpoint and wrap it with the
+    Load a multimodal backbone checkpoint and wrap it with the
     ReMoScene extension.
 
     Parameters

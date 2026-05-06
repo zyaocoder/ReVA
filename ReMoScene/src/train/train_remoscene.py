@@ -53,7 +53,7 @@ for _p in (_PACKAGE_DIR, _SRC_DIR):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from llavaonevision1_5.remoscene import (
+from backbone.remoscene import (
     ReMoSceneConfig,
     ReMoSceneWrapper,
     build_remoscene_model,
@@ -411,7 +411,7 @@ def train():
     )
 
     rank0_print("=" * 70)
-    rank0_print("ReVA / ReMoScene  ·  based on a LLaVA-v1.5-style backbone")
+    rank0_print("ReVA / ReMoScene  ·  multimodal video-language backbone")
     rank0_print(f"  base model      : {model_args.model_id}")
     rank0_print(f"  num_queries (Lq): {remoscene_args.num_queries}")
     rank0_print(f"  mamba_ssm       : {'available' if _mamba_available() else 'fallback (attention)'}")
@@ -473,7 +473,7 @@ def train():
                               "gate_proj", "up_proj", "down_proj"],
             lora_dropout   = training_args.lora_dropout,
             bias           = training_args.lora_bias,
-            # language_model is an internal LLaVA sub-module, not a standalone
+            # language_model is an internal backbone sub-module, not a standalone
             # CausalLM, so it lacks prepare_inputs_for_generation.
             # FEATURE_EXTRACTION uses the base PeftModel which has no such
             # requirement; LoRA adapters are injected identically.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Training script for ReMoScene on RSVidQA
+# Training script for ReMoScene
 # Usage: bash scripts/train_remoscene.sh
 
 set -euo pipefail
@@ -10,7 +10,7 @@ DEEPSPEED_BIN="${DEEPSPEED_BIN:-deepspeed}"
 MODEL_ID="${MODEL_ID:-/path/to/base_model}"
 DATA_PATH="${DATA_PATH:-/path/to/train.jsonl}"
 IMAGE_FOLDER="${IMAGE_FOLDER:-/path/to/video_root}"
-OUTPUT_DIR="${OUTPUT_DIR:-./checkpoints/remoscene-rsvidqa}"
+OUTPUT_DIR="${OUTPUT_DIR:-./checkpoints/remoscene_run}"
 
 # ---- Training config -----------------------------------------------------
 GLOBAL_BATCH_SIZE="${GLOBAL_BATCH_SIZE:-32}"

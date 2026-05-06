@@ -26,7 +26,7 @@ def replace_image_tokens(input_string, is_video=False):
 
     return re.sub(pattern, replacement, input_string)
 
-def llava_to_openai(conversations, is_video=False):
+def conversations_to_openai(conversations, is_video=False):
     role_mapping = {"human": "user", "gpt": "assistant", "user": "user", "assistant": "assistant"}
 
     transformed_data = []

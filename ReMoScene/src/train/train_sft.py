@@ -3,7 +3,7 @@ import torch
 from peft import LoraConfig, get_peft_model
 import ast
 from transformers import AutoProcessor, BitsAndBytesConfig, HfArgumentParser, Qwen2_5_VLForConditionalGeneration
-from llavaonevision1_5.modeling_llavaonevision1_5.py import LLaVAOneVision1_5_ForConditionalGeneration
+from backbone.modeling_backbone import ReVABackboneForConditionalGeneration
 from src.trainer import QwenSFTTrainer
 from src.dataset import make_supervised_data_module
 from src.params import DataArguments, ModelArguments, TrainingArguments
@@ -147,8 +147,8 @@ def train():
                 **bnb_model_from_pretrained_args
             )
         else:
-            rank0_print("Loading LLaVAOneVision model...")
-            model = LLaVAOneVision1_5_ForConditionalGeneration.from_pretrained(
+            rank0_print("Loading ReVA backbone model...")
+            model = ReVABackboneForConditionalGeneration.from_pretrained(
                 model_args.model_id,
                 torch_dtype=compute_dtype,
                 attn_implementation="flash_attention_2" if not training_args.disable_flash_attn2 else "sdpa", 

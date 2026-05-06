@@ -16,7 +16,7 @@ def replace_image_tokens(input_string, is_video=False):
 
     return re.sub(pattern, '', input_string)
 
-def llava_to_openai(conversations, is_video=False):
+def conversations_to_openai(conversations, is_video=False):
     role_mapping = {"human": "user", "gpt": "assistant"}
 
     transformed_data = []
@@ -136,7 +136,7 @@ class GRPODataset(Dataset):
                         video_file = os.path.join(video_folder, video_file)
                 contents.append(get_video_content(video_file, self.video_min_pixel, self.video_max_pixel, self.video_resized_w, self.video_resized_h, self.data_args.fps))
 
-        conversations = copy.deepcopy(llava_to_openai(sources['conversations'], is_video=is_video))
+        conversations = copy.deepcopy(conversations_to_openai(sources['conversations'], is_video=is_video))
 
         user_input = conversations[0]
         gpt_response = conversations[1]

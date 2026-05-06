@@ -25,11 +25,11 @@ THIS_DIR = Path(__file__).resolve().parent
 if str(THIS_DIR) not in sys.path:
     sys.path.insert(0, str(THIS_DIR))
 
-_stub = types.ModuleType("llavaonevision1_5.modeling_llavaonevision1_5")
-_stub.LLaVAOneVision1_5_ForConditionalGeneration = MagicMock()
-sys.modules["llavaonevision1_5.modeling_llavaonevision1_5"] = _stub
+_stub = types.ModuleType("backbone.modeling_backbone")
+_stub.ReVABackboneForConditionalGeneration = MagicMock()
+sys.modules["backbone.modeling_backbone"] = _stub
 
-from llavaonevision1_5.remoscene import (  # noqa: E402
+from backbone.remoscene import (  # noqa: E402
     ReMoSceneConfig,
     ReMoSceneSelector,
     MotionBranch,

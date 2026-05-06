@@ -1,5 +1,5 @@
-from llavaonevision1_5.configuration_llavaonevision1_5 import Llavaonevision1_5Config
-from llavaonevision1_5.modeling_llavaonevision1_5 import LLaVAOneVision1_5_ForConditionalGeneration
+from backbone.configuration_backbone import ReVABackboneConfig
+from backbone.modeling_backbone import ReVABackboneForConditionalGeneration
 from transformers import Qwen2Tokenizer, AutoProcessor, AutoConfig
 from transformers import MLCDVisionModel
 from transformers import CLIPImageProcessor
@@ -41,19 +41,19 @@ def load_empty_model(llm_path):
     processor = AutoProcessor.from_pretrained("Qwen/Qwen2.5-VL-7B-Instruct", use_fast=True)
     processor.image_processor.temporal_patch_size = 1
     processor.image_processor.max_pixels = 1600*1600
-    llava_ov_config = Llavaonevision1_5Config()
+    backbone_config = ReVABackboneConfig()
     llm_config = AutoConfig.from_pretrained(llm_path, trust_remote_code=True, use_fast=True)
-    llava_ov_config.text_config.update(llm_config.to_dict())
-    llava_ov_config.vision_config.text_hidden_size = llava_ov_config.text_config.hidden_size
-    model = LLaVAOneVision1_5_ForConditionalGeneration(llava_ov_config)
+    backbone_config.text_config.update(llm_config.to_dict())
+    backbone_config.vision_config.text_hidden_size = backbone_config.text_config.hidden_size
+    model = ReVABackboneForConditionalGeneration(backbone_config)
     return model, processor, tokenizer
 
 def load_vit_weights(model, vit_path):
     """
-    Load ViT weights and copy them to the vision part of LLaVAOneVision1_5_ForConditionalGeneration
+    Load ViT weights and copy them to the vision part of the ReVA backbone model.
     
     Args:
-        model: LLaVAOneVision1_5_ForConditionalGeneration
+        model: ReVA backbone model
         vit_path: ViT model path
     """
     print(f"Loading weight form: {vit_path}")
@@ -133,10 +133,10 @@ def load_vit_weights(model, vit_path):
 
 def load_adapter_weights(model, adapter_path, cur_len):
     """
-    Load Adapter weights and copy them to the corresponding part of LLaVAOneVision1_5_ForConditionalGeneration
+    Load adapter weights and copy them to the corresponding part of the ReVA backbone model.
     
     Args:
-        model: LLaVAOneVision1_5_ForConditionalGeneration model
+        model: ReVA backbone model
         adapter_path: Adapter model path
     """
     print(f"Loading Adapter weights from: {adapter_path}")
@@ -190,7 +190,7 @@ def load_llm_weights(model, llm_path, cur_len):
     Load LLM model weights and copy them to the language model part of Qwen2VL
 
     Args:
-        model: LLaVAOneVision1_5_ForConditionalGeneration model
+        model: ReVA backbone model
         llm_path: LLM model path
     """
     print(f"Loading weight form: {llm_path}")
@@ -251,7 +251,7 @@ def validate_vit_consistency(model, vit_path, img_path):
     Verify the consistency of the ViT component
     
     Args:
-        model: LLaVAOneVision1_5_ForConditionalGeneration after merged
+        model: ReVA backbone model after merging
         vit_path: original ViT model path
         sample_image: sample image
     """
@@ -301,7 +301,7 @@ def validate_llm_consistency(model, llm_path, sample_text):
     Verify the consistency of the LLM component
     
     Args:
-        model: Merged LLaVAOneVision1_5_ForConditionalGeneration model
+        model: merged ReVA backbone model
         llm_path: Original LLM model path
         sample_text: Sample text
     """

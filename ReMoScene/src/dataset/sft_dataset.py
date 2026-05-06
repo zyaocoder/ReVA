@@ -17,7 +17,7 @@ from src.constants import (
     SYSTEM_MESSAGE,
 )
 
-from .data_utils import get_image_info, get_video_info, llava_to_openai, pad_sequence
+from .data_utils import get_image_info, get_video_info, conversations_to_openai, pad_sequence
 from .record_utils import load_records
 import random
 
@@ -94,7 +94,7 @@ class SupervisedDataset(Dataset):
 
         cache_root = os.path.join(
             tempfile.gettempdir(),
-            "llava_video_178k_extracted",
+            "reva_video_extracted",
             os.path.basename(source_dir),
         )
         extracted_path = os.path.join(cache_root, member_name)
@@ -213,7 +213,7 @@ class SupervisedDataset(Dataset):
             images=None
             videos=None
 
-        sources = copy.deepcopy(llava_to_openai(sources['conversations'], is_video=is_video))
+        sources = copy.deepcopy(conversations_to_openai(sources['conversations'], is_video=is_video))
 
         all_input_ids = [] 
         all_labels = []

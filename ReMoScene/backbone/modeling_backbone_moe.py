@@ -37,7 +37,7 @@ from transformers.modeling_outputs import BaseModelOutputWithPast, ModelOutput, 
 from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS, dynamic_rope_update
 from transformers.modeling_utils import PreTrainedModel, ALL_ATTENTION_FUNCTIONS
 from transformers.utils import auto_docstring, can_return_tuple, is_torch_flex_attn_available, is_torchdynamo_compiling, logging
-from llavaonevision1_5.configuration_qwen3_vl_moe import Llavaonevision1_5Config, LLaVAOneVision1_5_TextConfig, RiceConfig
+from backbone.configuration_backbone_moe import Llavaonevision1_5Config, LLaVAOneVision1_5_TextConfig, RiceConfig
 from transformers.integrations import use_kernel_forward_from_hub
 from transformers.processing_utils import Unpack
 from transformers.modeling_flash_attention_utils import FlashAttentionKwargs

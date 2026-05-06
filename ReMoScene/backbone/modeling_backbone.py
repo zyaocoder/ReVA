@@ -42,7 +42,7 @@ from transformers.integrations import use_kernel_forward_from_hub
 from transformers.processing_utils import Unpack
 from transformers.modeling_flash_attention_utils import FlashAttentionKwargs
 from transformers import AutoModelForCausalLM, AutoConfig
-from llavaonevision1_5.configuration_llavaonevision1_5 import Llavaonevision1_5Config, LLaVAOneVision1_5_TextConfig, RiceConfig
+from backbone.configuration_backbone import Llavaonevision1_5Config, LLaVAOneVision1_5_TextConfig, RiceConfig
 
 
 if is_flash_attn_available():
@@ -2068,8 +2068,22 @@ class LLaVAOneVision1_5_ForConditionalGeneration(Qwen2VLPreTrainedModel, Generat
         return input_ids, model_kwargs
 
 
-__all__ = ["LLaVAOneVision1_5_ForConditionalGeneration", "LLaVAOneVision1_5_Model", "Qwen2VLPreTrainedModel", "LLaVAOneVision1_5_TextModel"]
+ReVABackboneForConditionalGeneration = LLaVAOneVision1_5_ForConditionalGeneration
+ReVABackboneModel = LLaVAOneVision1_5_Model
+ReVABackboneTextModel = LLaVAOneVision1_5_TextModel
 
 
+__all__ = [
+    "LLaVAOneVision1_5_ForConditionalGeneration",
+    "LLaVAOneVision1_5_Model",
+    "Qwen2VLPreTrainedModel",
+    "LLaVAOneVision1_5_TextModel",
+    "ReVABackboneForConditionalGeneration",
+    "ReVABackboneModel",
+    "ReVABackboneTextModel",
+]
+
+
+AutoConfig.register("reva_backbone", Llavaonevision1_5Config)
 AutoConfig.register("llavaonevision1_5", Llavaonevision1_5Config)
 AutoModelForCausalLM.register(Llavaonevision1_5Config, LLaVAOneVision1_5_ForConditionalGeneration)

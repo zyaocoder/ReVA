@@ -18,11 +18,14 @@ RUN apt-get update && \
 
 WORKDIR /workspace
 
-COPY requirements.txt /workspace/requirements.txt
+COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -i ${PYPI_MIRROR} \
     ${PIP_EXTRA_INDEX_URL:+--extra-index-url ${PIP_EXTRA_INDEX_URL}} \
-    -r /workspace/requirements.txt
-RUN rm -r /workspace/requirements.txt /workspace/README.md /workspace/docker-examples /workspace/license.txt /workspace/tutorials
+    -r /tmp/requirements.txt \
+    && rm -f /tmp/requirements.txt
+
+COPY . /workspace
+ENV PYTHONPATH=/workspace/ReMoScene:/workspace/ReMoScene/src
 
 
 CMD ["/bin/bash"]

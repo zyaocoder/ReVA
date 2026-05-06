@@ -60,3 +60,14 @@ coverage.xml
 **/.ipynb_checkpoints/
 .vscode/
 checkpoints/
+logs/
+runs/
+wandb/
+data/
+datasets/
+tmp/
+job_*
+*.log
+nohup.out
+.ruff_cache/
+.DS_Store

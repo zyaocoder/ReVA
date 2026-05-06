@@ -39,16 +39,62 @@ export PYTHONPATH="$PWD/ReMoScene:$PWD/ReMoScene/src:$PYTHONPATH"
 
 ## Training Data Format
 
-Training expects JSONL. A minimal sample:
+The raw ReVA split files are JSON files such as:
+
+```text
+/home/liw324/code/VLM-Baselines/#dataset/ReVA_V2/valid_set.json
+```
+
+Their top-level structure is:
 
 ```json
 {
-  "id": "sample_0001",
-  "video": "videos/demo.mp4",
+  "metadata": {
+    "total_videos": 646,
+    "total_questions": 8628
+  },
+  "videos": {
+    "DJI_0157_d4_01": {
+      "file_path": "#dataset/ReVA_V2/videos/DJI_0157_d4_01.mp4",
+      "subdir": "videos",
+      "consolidated_caption": "...",
+      "dataset_name": "ReVA_V2",
+      "mcq": {
+        "Temporal Understanding": {
+          "Temporal Grounding": [
+            {
+              "question": "...",
+              "options": {
+                "A": "...",
+                "B": "...",
+                "C": "...",
+                "D": "..."
+              },
+              "correct_answer": "B",
+              "reasoning": "...",
+              "example": "...",
+              "qa_id": "..."
+            }
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+`train_remoscene.py` consumes JSONL after conversion. A minimal converted record looks like:
+
+```json
+{
+  "video": "videos/DJI_0157_d4_01.mp4",
   "conversations": [
-    {"from": "human", "value": "<video>\nDescribe the scene."},
-    {"from": "gpt", "value": "A person is walking through a hallway."}
-  ]
+    {"from": "human", "value": "<video>\nQuestion text\nA. ...\nB. ...\nC. ...\nD. ..."},
+    {"from": "gpt", "value": "B"}
+  ],
+  "category": "Temporal Understanding",
+  "subcategory": "Temporal Grounding",
+  "video_id": "DJI_0157_d4_01"
 }
 ```
 
@@ -60,6 +106,15 @@ python ReMoScene/convert_hf_video_to_reva.py \
   --output_path data/train.jsonl \
   --dataset_split train \
   --video_root /path/to/video_root
+```
+
+For the current ReVA split JSON files, use:
+
+```bash
+python ReMoScene/convert_videoqa_to_reva.py \
+  --input /home/liw324/code/VLM-Baselines/#dataset/ReVA_V2/train_set.json \
+  --output data/train.jsonl \
+  --video_root /home/liw324/code/VLM-Baselines/#dataset/ReVA_V2
 ```
 
 ## Smoke Test
@@ -95,9 +150,3 @@ deepspeed --num_gpus 4 ReMoScene/src/train/train_remoscene.py \
   --image_folder "$IMAGE_FOLDER" \
   --output_dir "$OUTPUT_DIR"
 ```
-
-## Notes
-
-- Project name: `ReVA`
-- Model/module name: `ReMoScene`
-- No Slurm dependency is required in this repo

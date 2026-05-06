@@ -41,12 +41,6 @@ export PYTHONPATH="$PWD/ReMoScene:$PWD/ReMoScene/src:$PYTHONPATH"
 
 The raw ReVA split files are JSON files such as:
 
-```text
-/home/liw324/code/VLM-Baselines/#dataset/ReVA_V2/valid_set.json
-```
-
-Their top-level structure is:
-
 ```json
 {
   "metadata": {

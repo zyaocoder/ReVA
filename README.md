@@ -44,10 +44,10 @@
 
 - [🌟 Abstract](#-abstract)
 - [🚀 Quick Start](#-quick-start)
-<!-- - [🤗 Model Zoo](#-model-zoo) -->
 - [📌 TODO](#-todo)
 - [🪪 License](#-license)
 - [✉️ Contact](#-contact)
+<!-- - [🤗 Model Zoo](#-model-zoo) -->
 
 ## 🌟 Abstract
 
@@ -63,7 +63,7 @@ Please follow [INSTALL.md](assets/readmes/INSTALL.md) to install the environment
 
 ### Training pipeline
 
-We provide our training code [TRAIN.md](assets/readmes/INSTALL.md). Start training ReMoSense by following this instruction 🥳 <br>
+We provide our training code [TRAIN.md](assets/readmes/TRAIN.md). Start training ReMoSense by following this instruction 🥳 <br>
 
 <!-- ### Model Zoo
 

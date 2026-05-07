@@ -85,6 +85,10 @@ We release our ReMoSense model pretrained weights on Hugging Face with benchmark
 
 This repository is under the [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc] license in [Creative Commons Attribution-NonCommercial 4.0 International License](LICENSE). For commercial use, please contact with the authors.
 
+[cc-by-nc]: http://creativecommons.org/licenses/by-nc/4.0/
+[cc-by-nc-image]: https://licensebuttons.net/l/by-nc/4.0/88x31.png
+[cc-by-nc-shield]: https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg
+
 ## ✉️ Contact
 
 If you're have any questions about the code,please feel free to open an github issue in the repo. 😊

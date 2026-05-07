@@ -1,146 +1,89 @@
 # ReVA
 
-ReVA is a lightweight repository for our video-centric multimodal model work.
-This repo currently focuses on **ReMoScene**, a trainable video compression and
-motion reasoning module built on top of a multimodal backbone adapted from
-**LLaVA-ov-1.5**.
+<div align="center">
+  <b>
+    <a href="https://zyaocoder.github.io/" target="_blank">Zhen Yao</a><sup>1*</sup>,
+    <a target="_blank">Likai Wang</a><sup>1*</sup>,
+    <a target="_blank">Yuming Yang</a><sup>1</sup>,
+    <a href="https://scholar.google.com/citations?user=7qMGAvQAAAAJ&hl=en" target="_blank">Zhihao Zheng</a><sup>1</sup>,
+    <a href="https://scholar.google.com/citations?user=46_OVzoAAAAJ&hl=en&oi=ao" target="_blank">Bo Lang</a><sup>1</sup>,
+    <a href="https://scholar.google.com/citations?user=Pon9h8IAAAAJ&hl=en" target="_blank">Qiuyu Tang</a><sup>1</sup>,
+    <a target="_blank">Jialu Sheng</a><sup>1</sup>,
+    <a href="https://scholar.google.com/citations?user=GgAWQksAAAAJ&hl=en" target="_blank">Jingqi Xu</a><sup>2</sup>,
+    <a target="_blank">Yuehai Yang</a><sup>1</sup>,
+    <a target="_blank">Jumal Barker</a><sup>1</sup>,
+    <a href="https://scholar.google.com/citations?user=bMapOgMAAAAJ&hl=en" target="_blank">Xiaowen Ying</a><sup>3</sup>,
+    <a href="https://scholar.google.com/citations?user=SZBKvksAAAAJ&hl=en" target="_blank">Mooi Choo Chuah</a><sup>1</sup>,
+  </b><br>
+  
+  <span style="font-size: 1em; color: #555;">
+    Lehigh University<sup>1</sup><br>
+    University of Southern California<sup>2</sup><br>
+    Qualcomm AI Research<sup>3</sup>
+  </span>
 
-## Repository Layout
+  <p style="color: #555; font-size: 0.9em; margin-top: 8px; margin-bottom: 0;">
+    *Equal Contribution
+  </p>
+  
+## 🔥 News
 
-- `ReMoScene/backbone/remoscene.py`: ReMoScene core implementation
-- `ReMoScene/src/train/train_remoscene.py`: training entrypoint
-- `ReMoScene/scripts/train_remoscene.sh`: simple non-Slurm training script
-- `ReMoScene/convert_hf_video_to_reva.py`: dataset conversion helper
-- `ReMoScene/test_remoscene_smoke.py`: CPU smoke test
+[2026-05-05] 🤗 Our dataset and code are available. [Check it here!](https://huggingface.co/datasets/ReVA-Benchmark/ReVA)
 
-## Installation
+## 📝 Table of Contents
 
-`requirements.txt` is the only official dependency specification for this repo.
+- [🌟 Abstract](#-abstract)
+- [🚀 Quick Start](#-quick-start)
+- [🤗 Model Zoo](#-model-zoo)
+- [📌 TODO](#-todo)
+- [🪪 License](#-license)
+- [✉️ Contact](#-contact)
 
-```bash
-conda create -n reva python=3.10 pip
-conda activate reva
-pip install -r requirements.txt
-```
+## 🌟 Abstract
 
-Optional:
+Multimodal Large Language Models (MLLMs) have demonstrated remarkable advances in remote sensing. However, existing remote sensing multimodal reasoning benchmarks exhibit two critical limitations: they rely on (i) template-driven questions, which is ill-posed for real-world scenarios; and (ii) static image inputs that fail to capture the inherent temporal nature of drone/UAV videos. This leaves systematic evaluation of remote sensing video reasoning largely unexplored. To address this gap, we introduce ReVA, a new dataset for remote sensing video question answering, designed to assess spatiotemporal, scene-centric, and reasoning-oriented capabilities of MLLMs. ReVA comprises 2,798 drone videos spanning 18 cities worldwide (580K frames) and 22K high-quality question–answer pairs across 11 challenging QA tasks. We develop a semi-automatic annotation pipeline that leverages Text LLMs and MLLMs for question-answer generation with human verification. We evaluate 21 proprietary and open-source Video LLMs on ReVA, exposing fundamental limitations of current models. These findings position ReVA as a critical benchmark for advancing MLLMs toward better remote sensing video understanding and temporal reasoning capabilities for real-world deployments.
 
-```bash
-pip install mamba-ssm causal-conv1d
-```
+## 🚀 Quick Start!
 
-The current official stack follows the pinned CUDA build in `requirements.txt`.
+### Data preparation
+Please follow [DATASET.md](assets/readmes/DATASET.md) to prepare the datasets. <br>
 
-## Environment
+### Installation
+Please follow [INSTALL.md](assets/readmes/INSTALL.md) to install the environment. <br>
 
-```bash
-export PYTHONPATH="$PWD/ReMoScene:$PWD/ReMoScene/src:$PYTHONPATH"
-```
+### Training pipeline
 
-## Training Data Format
+We provide our training code [TRAIN.md](assets/readmes/INSTALL.md). Start training ReMoSense by following this instruction 🥳 <br>
 
-The raw ReVA split files are JSON files such as:
+<!-- ### Model Zoo
 
-```json
-{
-  "metadata": {
-    "total_videos": 646,
-    "total_questions": 8628
-  },
-  "videos": {
-    "DJI_0157_d4_01": {
-      "file_path": "#dataset/ReVA_V2/videos/DJI_0157_d4_01.mp4",
-      "subdir": "videos",
-      "consolidated_caption": "...",
-      "dataset_name": "ReVA_V2",
-      "mcq": {
-        "Temporal Understanding": {
-          "Temporal Grounding": [
-            {
-              "question": "...",
-              "options": {
-                "A": "...",
-                "B": "...",
-                "C": "...",
-                "D": "..."
-              },
-              "correct_answer": "B",
-              "reasoning": "...",
-              "example": "...",
-              "qa_id": "..."
-            }
-          ]
-        }
-      }
-    }
-  }
-}
-```
+We release our ReMoSense model pretrained weights on Hugging Face with benchmark performance:
 
-`train_remoscene.py` consumes JSONL after conversion. A minimal converted record looks like:
+|Base LLM| Training data | Parameters | ReVA | Link |
+|-----|--------|--------|------|------|------------|----------|------|
+|Qwen2.5-VL-7B-Instruct| ReVA | 7B | 80.1 | 🤗 [HuggingFace]() |
+ -->
 
-```json
-{
-  "video": "videos/DJI_0157_d4_01.mp4",
-  "conversations": [
-    {"from": "human", "value": "<video>\nQuestion text\nA. ...\nB. ...\nC. ...\nD. ..."},
-    {"from": "gpt", "value": "B"}
-  ],
-  "category": "Temporal Understanding",
-  "subcategory": "Temporal Grounding",
-  "video_id": "DJI_0157_d4_01"
-}
-```
+## 📌 TODO
 
-## Convert Local HF/Parquet Data
 
-```bash
-python ReMoScene/convert_hf_video_to_reva.py \
-  --input_path /path/to/dataset_or_parquet \
-  --output_path data/train.jsonl \
-  --dataset_split train \
-  --video_root /path/to/video_root
-```
+- [x] Release the dataset.
+- [x] Release the training code.
+- [ ] Release our model's pretrained weights.
+- [ ] Support more VLMs as the base models.
 
-For the current ReVA split JSON files, use:
+## 🪪 License
 
-```bash
-python ReMoScene/convert_videoqa_to_reva.py \
-  --input /home/liw324/code/VLM-Baselines/#dataset/ReVA_V2/train_set.json \
-  --output data/train.jsonl \
-  --video_root /home/liw324/code/VLM-Baselines/#dataset/ReVA_V2
-```
+This repository is under the Apache-2.0 license. For commercial use, please contact with the authors.
 
-## Smoke Test
+## ✉️ Contact
 
-```bash
-python ReMoScene/test_remoscene_smoke.py
-```
 
-## Training
+If you're have any questions about the code,please feel free to open an github issue in the repo. 😊
 
-Set paths first:
+For collaboration opportunities or other questions, feel free to send us an email at zhenyaocv@gmail.com. 
 
-```bash
-export MODEL_ID=/path/to/base_model
-export DATA_PATH=/path/to/train.jsonl
-export IMAGE_FOLDER=/path/to/video_root
-export OUTPUT_DIR=./checkpoints/remoscene_run
-```
 
-Run:
+## Citation
 
-```bash
-bash ReMoScene/scripts/train_remoscene.sh
-```
-
-Or launch manually:
-
-```bash
-deepspeed --num_gpus 4 ReMoScene/src/train/train_remoscene.py \
-  --deepspeed ReMoScene/scripts/zero3.json \
-  --model_id "$MODEL_ID" \
-  --data_path "$DATA_PATH" \
-  --image_folder "$IMAGE_FOLDER" \
-  --output_dir "$OUTPUT_DIR"
-```
+If you use this work in your research, please cite:

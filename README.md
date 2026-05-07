@@ -44,7 +44,7 @@
 
 - [🌟 Abstract](#-abstract)
 - [🚀 Quick Start](#-quick-start)
-- [🤗 Model Zoo](#-model-zoo)
+<!-- - [🤗 Model Zoo](#-model-zoo) -->
 - [📌 TODO](#-todo)
 - [🪪 License](#-license)
 - [✉️ Contact](#-contact)

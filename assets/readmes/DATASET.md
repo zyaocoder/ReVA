@@ -1,4 +1,4 @@
-# ReVA
+# ReVA Dataset Instruction
 
 We introduce ReVA, a scene-centric remote sensing video question answering dataset comprising 2,798 UAV videos spanning 580K frames across 18 cities worldwide. ReVA contains 22K high-quality human-annotated question-answer pairs with 17K unique questions. To the best of our knowledge, ReVA is the first remote sensing dataset for video understanding.
 

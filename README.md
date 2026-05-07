@@ -1,4 +1,13 @@
-# ReVA
+<div align="center">
+
+  <h1 style="margin: 0; font-size: 1.8em;">
+    ReVA
+  </h1>
+
+  [![arXiv](https://img.shields.io/badge/arxiv-A42C25?style=for-the-badge&logo=arxiv&logoColor=white)]()
+  [![Hugging Face](https://img.shields.io/badge/HuggingFace-fcd022?style=for-the-badge&logo=huggingface&logoColor=000)](https://huggingface.co/collections/Chrisathy/reva)
+
+</div>
 
 <div align="center">
   <b>
@@ -25,10 +34,11 @@
   <p style="color: #555; font-size: 0.9em; margin-top: 8px; margin-bottom: 0;">
     *Equal Contribution
   </p>
-  
+</div>
+
 ## 🔥 News
 
-[2026-05-05] 🤗 Our dataset and code are available. [Check it here!](https://huggingface.co/datasets/ReVA-Benchmark/ReVA)
+[2026-05-05] 🤗 Our dataset and code are available [here](https://huggingface.co/datasets/ReVA-Benchmark/ReVA).
 
 ## 📝 Table of Contents
 
@@ -65,7 +75,6 @@ We release our ReMoSense model pretrained weights on Hugging Face with benchmark
  -->
 
 ## 📌 TODO
-
 
 - [x] Release the dataset.
 - [x] Release the training code.

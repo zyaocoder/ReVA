@@ -51,7 +51,7 @@
 
 ## 🌟 Abstract
 
-Multimodal Large Language Models (MLLMs) have demonstrated remarkable advances in remote sensing. However, existing remote sensing multimodal reasoning benchmarks exhibit two critical limitations: they rely on (i) template-driven questions, which is ill-posed for real-world scenarios; and (ii) static image inputs that fail to capture the inherent temporal nature of drone/UAV videos. This leaves systematic evaluation of remote sensing video reasoning largely unexplored. To address this gap, we introduce ReVA, a new dataset for remote sensing video question answering, designed to assess spatiotemporal, scene-centric, and reasoning-oriented capabilities of MLLMs. ReVA comprises 2,798 drone videos spanning 18 cities worldwide (580K frames) and 22K high-quality question–answer pairs across 11 challenging QA tasks. We develop a semi-automatic annotation pipeline that leverages Text LLMs and MLLMs for question-answer generation with human verification. We evaluate 21 proprietary and open-source Video LLMs on ReVA, exposing fundamental limitations of current models. These findings position ReVA as a critical benchmark for advancing MLLMs toward better remote sensing video understanding and temporal reasoning capabilities for real-world deployments.
+<!-- Multimodal Large Language Models (MLLMs) have demonstrated remarkable advances in remote sensing. However, existing remote sensing multimodal reasoning benchmarks exhibit two critical limitations: they rely on (i) template-driven questions, which is ill-posed for real-world scenarios; and (ii) static image inputs that fail to capture the inherent temporal nature of drone/UAV videos. This leaves systematic evaluation of remote sensing video reasoning largely unexplored. To address this gap, we introduce ReVA, a new dataset for remote sensing video question answering, designed to assess spatiotemporal, scene-centric, and reasoning-oriented capabilities of MLLMs. ReVA comprises 2,798 drone videos spanning 18 cities worldwide (580K frames) and 22K high-quality question–answer pairs across 11 challenging QA tasks. We develop a semi-automatic annotation pipeline that leverages Text LLMs and MLLMs for question-answer generation with human verification. We evaluate 21 proprietary and open-source Video LLMs on ReVA, exposing fundamental limitations of current models. These findings position ReVA as a critical benchmark for advancing MLLMs toward better remote sensing video understanding and temporal reasoning capabilities for real-world deployments. -->
 
 ## 🚀 Quick Start!
 
@@ -96,7 +96,7 @@ If you're have any questions about the code,please feel free to open an github i
 For collaboration opportunities or other questions, feel free to send us an email at zhenyaocv@gmail.com. 
 
 ## Acknowledgement
-- We build our work on top of [BIMBA](https://github.com/md-mohaiminul/BIMBA) 
+- We build our work on top of [BIMBA](https://github.com/md-mohaiminul/BIMBA) and [LLaVA-OneVision-1.5](https://github.com/EvolvingLMMs-Lab/LLaVA-OneVision-2)
 - We appreciate the funding support of Qualcomm
 
 ## Citation

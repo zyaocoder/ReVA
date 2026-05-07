@@ -83,15 +83,17 @@ We release our ReMoSense model pretrained weights on Hugging Face with benchmark
 
 ## 🪪 License
 
-This repository is under the Apache-2.0 license. For commercial use, please contact with the authors.
+This repository is under the [![CC BY-NC 4.0][cc-by-nc-shield]][cc-by-nc] license in [Creative Commons Attribution-NonCommercial 4.0 International License](LICENSE). For commercial use, please contact with the authors.
 
 ## ✉️ Contact
-
 
 If you're have any questions about the code,please feel free to open an github issue in the repo. 😊
 
 For collaboration opportunities or other questions, feel free to send us an email at zhenyaocv@gmail.com. 
 
+## Acknowledgement
+- We build our work on top of [BIMBA](https://github.com/md-mohaiminul/BIMBA) 
+- We appreciate the funding support of Qualcomm
 
 ## Citation
 
